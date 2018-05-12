@@ -17,7 +17,31 @@ public class Main {
     }
 
     public static void main(String... args) {
-        String output = String.format("connect smtp\nTo: %s\n\n%s\n\ndisconnect\n", args[0], args[1]);
+        try {
+            writeToNetwork(args[0], args[1]);
+        } catch (Exception e) {
+            writeToConsole(e.getMessage());
+        }
+    }
+
+    private static void writeToConsole(String errorMessage) {
+        try {
+            console.write(errorMessage + "\n");
+            console.flush();
+        } catch (Exception ioe) {
+            log.severe(ioe.getMessage());
+        }
+    }
+
+    private static void validate(String address) {
+        if (address.indexOf('@') <= 0) {
+            throw new RuntimeException("Invalid email address: " + address);
+        }
+    }
+
+    private static void writeToNetwork(String address, String message) {
+        validate(address);
+        String output = String.format("connect smtp\nTo: %s\n\n%s\n\ndisconnect\n", address, message);
         try {
             network.write(output);
             network.flush();
