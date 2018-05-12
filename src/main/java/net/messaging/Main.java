@@ -1,6 +1,7 @@
 package net.messaging;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class Main {
@@ -18,10 +19,11 @@ public class Main {
 
     public static void main(String... args) {
         try {
-            if (args.length < 2 || args[1].isEmpty())
+            if (args.length < 2 || args[args.length - 1].isEmpty())
                 throw new RuntimeException("Cannot send an email with no body.");
 
-            writeToNetwork(args[0], args[1]);
+            String message = args[args.length - 1];
+            writeToNetwork(Arrays.copyOf(args, args.length - 1), message);
         } catch (Exception e) {
             writeToConsole(e.getMessage());
         }
@@ -36,17 +38,30 @@ public class Main {
         }
     }
 
-    private static void validate(String address) {
-        if (address.indexOf('@') <= 0) {
-            throw new RuntimeException("Invalid email address: " + address);
+    private static void validate(String[] addresses) {
+        for (String address: addresses) {
+            if (address.indexOf('@') <= 0) {
+                throw new RuntimeException("Invalid email address: " + address);
+            }
         }
     }
 
-    private static void writeToNetwork(String address, String message) {
-        validate(address);
-        String output = String.format("connect smtp\nTo: %s\n\n%s\n\ndisconnect\n", address, message);
+    private static void writeToNetwork(String[] addresses, String message) {
+        validate(addresses);
+        StringBuilder email = new StringBuilder();
+        email.append("connect smtp");
+
+        for(String address: addresses) {
+            String[] emails = address.split(",");
+            for(String emid: emails) {
+                email.append("\nTo: ").append(emid);
+            }
+        }
+
+        email.append("\n\n").append(message).append("\n\ndisconnect\n");
+
         try {
-            network.write(output);
+            network.write(email.toString());
             network.flush();
         } catch (IOException ioe) {
             log.severe(ioe.getMessage());
