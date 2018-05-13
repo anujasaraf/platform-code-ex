@@ -39,10 +39,22 @@ public class Main {
     }
 
     private static void validate(String[] addresses) {
-        for (String address: addresses) {
-            if (address.indexOf('@') <= 0) {
-                throw new RuntimeException("Invalid email address: " + address);
+        StringBuilder invalidAddress = new StringBuilder();
+        int count = 0;
+        for (String address : addresses) {
+            String[] emails = address.split(",");
+            for (String email : emails) {
+                if (email.indexOf('@') <= 0) {
+                    invalidAddress.append(" ").append(email);
+                    count++;
+                }
             }
+        }
+
+        if (count == 1) {
+            throw new RuntimeException("Invalid email address:" + invalidAddress);
+        } else if (count > 1) {
+            throw new RuntimeException("Invalid email addresses:" + invalidAddress);
         }
     }
 
@@ -51,9 +63,9 @@ public class Main {
         StringBuilder email = new StringBuilder();
         email.append("connect smtp");
 
-        for(String address: addresses) {
+        for (String address : addresses) {
             String[] emails = address.split(",");
-            for(String emid: emails) {
+            for (String emid : emails) {
                 email.append("\nTo: ").append(emid);
             }
         }

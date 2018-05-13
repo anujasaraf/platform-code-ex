@@ -66,10 +66,10 @@ public class EndToEndTest {
         consoleShouldReceive(NO_OUTPUT);
     }
 
-    @Ignore @Test public void betterErrorHandlingsForMultipleAddresses_story5() {
+    @Test public void betterErrorHandlingsForMultipleAddresses_story5() {
         Main.main("sallyatexample.com,joeatexample.com", "Hi everyone!");
         networkShouldReceive(NO_OUTPUT);
-        consoleShouldReceive("Invalid email addresses: sallyatexample.com joeateasmple.com\n");
+        consoleShouldReceive("Invalid email addresses: sallyatexample.com joeatexample.com\n");
     }
 
     @Ignore @Test public void sendAMessageInAnotherFormat_story6() {
