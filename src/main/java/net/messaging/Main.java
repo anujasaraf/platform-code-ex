@@ -91,7 +91,7 @@ public class Main {
             network.write(email.toString());
             network.flush();
         } catch (IOException ioe) {
-            log.severe(ioe.getMessage());
+            writeToConsole("Connection error. Please try again.");
         }
     }
 }
