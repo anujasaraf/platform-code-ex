@@ -19,11 +19,19 @@ public class Main {
 
     public static void main(String... args) {
         try {
-            if (args.length < 2 || args[args.length - 1].isEmpty())
+            if (args.length < 2 || args[1].indexOf('-') == 0 && args.length < 3 || args[args.length - 1].isEmpty())
                 throw new RuntimeException("Cannot send an email with no body.");
 
+            boolean isIm = args[0].contains("-im");
+            String addresses[];
+            if (!isIm) {
+                addresses = Arrays.copyOf(args, args.length - 1);
+            } else {
+                addresses = Arrays.copyOfRange(args, 1,args.length - 1);
+            }
+
             String message = args[args.length - 1];
-            writeToNetwork(Arrays.copyOf(args, args.length - 1), message);
+            writeToNetwork(addresses, message, isIm);
         } catch (Exception e) {
             writeToConsole(e.getMessage());
         }
@@ -58,19 +66,26 @@ public class Main {
         }
     }
 
-    private static void writeToNetwork(String[] addresses, String message) {
+    private static void writeToNetwork(String[] addresses, String message, boolean isIm) {
         validate(addresses);
         StringBuilder email = new StringBuilder();
-        email.append("connect smtp");
+        email.append("connect ").append(isIm ? "chat" : "smtp");
 
         for (String address : addresses) {
             String[] emails = address.split(",");
             for (String emid : emails) {
-                email.append("\nTo: ").append(emid);
+                if (!isIm)
+                    email.append("\nTo: ").append(emid);
+                else
+                    email.append("\n<" + emid+ ">").append("(" + message + ")");
             }
         }
 
-        email.append("\n\n").append(message).append("\n\ndisconnect\n");
+        if (!isIm) {
+            email.append("\n\n").append(message).append("\n\ndisconnect\n");
+        } else {
+            email.append("\ndisconnect\n");
+        }
 
         try {
             network.write(email.toString());

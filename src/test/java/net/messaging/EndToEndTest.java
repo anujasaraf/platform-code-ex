@@ -72,7 +72,7 @@ public class EndToEndTest {
         consoleShouldReceive("Invalid email addresses: sallyatexample.com joeatexample.com\n");
     }
 
-    @Ignore @Test public void sendAMessageInAnotherFormat_story6() {
+    @Test public void sendAMessageInAnotherFormat_story6() {
         Main.main("-im", "leslie@chat.example.com", ":-) hey there!");
         networkShouldReceive("connect chat\n" +
                 "<leslie@chat.example.com>(:-) hey there!)\n" +
