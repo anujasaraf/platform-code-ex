@@ -19,7 +19,7 @@ public class Main {
 
     public static void main(String... args) {
         try {
-            if (args.length < 2 || args[1].indexOf('-') == 0 && args.length < 3 || args[args.length - 1].isEmpty())
+            if (args.length < 2 || args[0].indexOf('-') == 0 && args.length < 3 || args[args.length - 1].isEmpty())
                 throw new RuntimeException("Cannot send an email with no body.");
 
             boolean isIm = args[0].contains("-im");
